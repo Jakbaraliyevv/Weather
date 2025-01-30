@@ -6,8 +6,14 @@ import cloudy11 from "../../img/cloudy11.svg";
 import windy from "../../img/widy.svg";
 import normaly from "../../img/normaly.svg";
 import loop from "../../img/loop.svg";
+import { useAxios } from "../../hooks/axios";
+import { useRef, useState } from "react";
 
 const WeatherComponents = () => {
+  const [data, setData] = useState<any[]>([]);
+
+  const location = useRef<HTMLInputElement>(null);
+
   // Style Bular
   const divStyle = "flex justify-between items-center ";
   const divStyle2 = "flex items-center gap-[30px]";
@@ -15,6 +21,28 @@ const WeatherComponents = () => {
   const p29 = "text-[19px] text-[#FFF]";
   const imgWith = "w-[17px]";
   // Style Bular
+
+  const axios = useAxios();
+
+  const getValue = (e: React.FormEvent) => {
+    e.preventDefault();
+    let country = location.current?.value;
+
+    if (country) {
+      axios({
+        url: country,
+        method: "POST",
+      })
+        .then((data) => setData(data.location))
+        .catch((error) => console.log(error));
+    }
+
+    if (location.current) {
+      location.current.value = "";
+    }
+  };
+
+  console.log(data);
 
   return (
     <section className="flex justify-between w-full h-[100vh]">
@@ -26,7 +54,7 @@ const WeatherComponents = () => {
           <h1 className="text-[#FFF] text-[92px] font-bold">19 °C </h1>
           <div className="flex gap-2 items-center ">
             <div className="">
-              <h2 className="text-[#FFF] text-[36px] font-bold">Andijan</h2>
+              <h2 className="text-[#FFF] text-[36px] font-bold">Andijon</h2>
               <div className="flex gap-2 text-[#FFF] text-[19px] ">
                 <p>01:29</p>
                 <p>Monday</p>
@@ -43,11 +71,12 @@ const WeatherComponents = () => {
         <div className="w-[90%]">
           <form className="w-full border-b-2 pb-2  border-[rgb(197,206,210)]">
             <input
+              ref={location}
               className="w-[90%] bg-transparent outline-none text-[#FFF] h-[25px]"
               type="text"
               placeholder="Joyni qidirish..."
             />
-            <button>
+            <button onClick={getValue}>
               <img className="w-[22px]" src={loop} alt="" />
             </button>
           </form>
